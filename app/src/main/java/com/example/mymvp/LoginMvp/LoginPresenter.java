@@ -10,8 +10,8 @@ public class LoginPresenter implements LoginCallBack,LoginMethodInterface {
 
     private LoginMethod loginMethod;
     private LoginView loginView;
-    public LoginPresenter(LoginMethod loginMethod,LoginView loginView) {
-       this.loginMethod = loginMethod;
+    public LoginPresenter(LoginView loginView) {
+       this.loginMethod = new LoginMethod(this);
        this.loginView = loginView;
     }
 
