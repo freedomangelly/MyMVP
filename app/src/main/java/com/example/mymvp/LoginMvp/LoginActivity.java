@@ -8,9 +8,15 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.example.mymvp.MainActivity;
 import com.example.mymvp.R;
+import com.example.mymvp.mvvm.LoginViewModel;
+import com.example.mymvp.mvvm.LoginViewModelFactory;
 
 /**
  * description:
@@ -25,6 +31,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     private EditText password;
     private LoginPresenter presenter;
 
+    private LoginViewModel viewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +47,30 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             }
         });
         presenter = new LoginPresenter(this);
+//        viewModel= ViewModelProviders.of(this).get(LoginViewModel.class);
+        viewModel= ViewModelProviders.of(this,new LoginViewModelFactory()).get(LoginViewModel.class);
+        viewModel.getLoginResult().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                switch (integer){
+                    case 0:
+                        startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                        break;
+                    case 1:
+                        username.setError(getString(R.string.username_error));
+                        break;
+                    case 2:
+                        password.setError(getString(R.string.password_error));
+                        break;
+                    case 3:
+                        progressBar.setVisibility(View.VISIBLE);
+                        break;
+                    case 4:
+                        progressBar.setVisibility(View.GONE);
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -68,6 +99,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     public void Login() {
-        presenter.login(username.getText().toString().trim(), password.getText().toString().trim());
+        viewModel.login(username.getText().toString().trim(), password.getText().toString().trim());
+//        presenter.login(username.getText().toString().trim(), password.getText().toString().trim());
     }
 }
